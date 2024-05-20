@@ -19,6 +19,15 @@ struct Point2f
 
 	float x;
 	float y;
+
+	friend bool operator!=(const Point2f lhs, const Point2f rhs) 
+	{
+		if (lhs.x != rhs.x && lhs.y != rhs.y)
+		{
+			return true;
+		}
+		return false;
+	}
 };
 
 

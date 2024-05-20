@@ -1,8 +1,16 @@
 #include "pch.h"
 #include "Game.h"
+#include <utils.h>
+#include <iostream>
 
-Game::Game( const Window& window ) 
-	:BaseGame{ window }
+using namespace utils;
+Game::Game(const Window& window)
+	:BaseGame{ window },
+	m_MazeWalls{},
+	m_PlayerPtr{ new Player(Point2f{35, 35})},
+	m_Camera{ new Camera(GetViewPort().width, GetViewPort().height) },
+	parser{},
+	LEVEL_SCALE{ 4.f }
 {
 	Initialize();
 }
@@ -10,11 +18,22 @@ Game::Game( const Window& window )
 Game::~Game( )
 {
 	Cleanup( );
+	delete m_PlayerPtr;
+	delete m_Camera;
 }
 
 void Game::Initialize( )
 {
-	
+	parser.GetVerticesFromSvgFile("SmallMaze.svg", m_MazeWalls);
+	for (size_t index = 0; index < m_MazeWalls.size(); index++)
+	{
+		for(size_t index2=0; index2 < m_MazeWalls[index].size(); index2++)
+		{
+			m_MazeWalls[index][index2].x *= LEVEL_SCALE;
+			m_MazeWalls[index][index2].y *= LEVEL_SCALE;
+		}
+	}
+	LinkPortals();
 }
 
 void Game::Cleanup( )
@@ -23,44 +42,40 @@ void Game::Cleanup( )
 
 void Game::Update( float elapsedSec )
 {
-	// Check keyboard state
-	//const Uint8 *pStates = SDL_GetKeyboardState( nullptr );
-	//if ( pStates[SDL_SCANCODE_RIGHT] )
-	//{
-	//	std::cout << "Right arrow key is down\n";
-	//}
-	//if ( pStates[SDL_SCANCODE_LEFT] && pStates[SDL_SCANCODE_UP])
-	//{
-	//	std::cout << "Left and up arrow keys are down\n";
-	//}
+	const UINT8* pStates = SDL_GetKeyboardState(nullptr);
+	m_PlayerPtr->Update(elapsedSec, m_MazeWalls, pStates);
+	std::cout << m_PlayerPtr->GetPosition().x << " " << m_PlayerPtr->GetPosition().y << "\n";
+
+	if (m_PlayerPtr->GetTeleportCoolDown() <= 0)
+	{
+		for (size_t index = 0; index < m_PortalWalls.size(); index++)
+		{
+			if (m_PortalWalls[index].IsPlayerTouchingPortal(m_PlayerPtr->GetPosition(), m_PlayerPtr->GetPlayerSize()) != Point2f{ -1,-1 })
+			{
+				m_PlayerPtr->SetPosition(m_PortalWalls[index].IsPlayerTouchingPortal(m_PlayerPtr->GetPosition(), m_PlayerPtr->GetPlayerSize()));
+			}
+		}
+	}
 }
 
 void Game::Draw( ) const
 {
 	ClearBackground( );
+	m_Camera->Move(m_PlayerPtr->GetPosition());
+	DrawMaze();
+	DrawPortals();
+	m_PlayerPtr->Draw();
+	m_Camera->Reset();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )
 {
-	//std::cout << "KEYDOWN event: " << e.keysym.sym << std::endl;
+	
 }
 
 void Game::ProcessKeyUpEvent( const SDL_KeyboardEvent& e )
 {
-	//std::cout << "KEYUP event: " << e.keysym.sym << std::endl;
-	//switch ( e.keysym.sym )
-	//{
-	//case SDLK_LEFT:
-	//	//std::cout << "Left arrow key released\n";
-	//	break;
-	//case SDLK_RIGHT:
-	//	//std::cout << "`Right arrow key released\n";
-	//	break;
-	//case SDLK_1:
-	//case SDLK_KP_1:
-	//	//std::cout << "Key 1 released\n";
-	//	break;
-	//}
+	
 }
 
 void Game::ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e )
@@ -107,4 +122,27 @@ void Game::ClearBackground( ) const
 {
 	glClearColor( 0.0f, 0.0f, 0.3f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
+}
+
+void Game::DrawMaze() const
+{
+	for (size_t index = 0; index < m_MazeWalls.size(); index++)
+	{
+		SetColor(Color4f{ 1,0,0,1 });
+		DrawPolygon(m_MazeWalls[index]);
+	}
+}
+
+void Game::DrawPortals() const
+{
+	for (size_t index = 0; index < m_PortalWalls.size(); index++)
+	{
+		m_PortalWalls[index].Draw();
+	}
+}
+
+void Game::LinkPortals()
+{
+	m_PortalWalls[0].LinkPortals(m_PortalWalls[1].GetLeftWallPoint());
+	m_PortalWalls[1].LinkPortals(m_PortalWalls[0].GetLeftWallPoint());
 }
