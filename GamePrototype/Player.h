@@ -22,8 +22,17 @@ public:
 	Point2f GetPosition() const;
 	void SetPosition(Point2f newPos);
 	void ResetPosition();
+	void DrawSprintBar() const;
 private:
 	float m_TeleportCooldown;
+
+	float m_StandardSpeed;
+	float m_DiagonalSpeed;
+
+	float m_SprintTime;
+	FLOAT m_SprintCoolDown;
+
+	bool m_IsSprinting;
 
 	Point2f m_Position;
 	Point2f m_PlayerSpeed;
@@ -43,6 +52,7 @@ private:
 	const float m_OriginalPosition;
 
 	const float PLAYER_SIZE;
+	const float SPRINT_REGEN;
 
 	// member functions
 	void DoRaycast(std::vector<std::vector<Point2f>> walls);

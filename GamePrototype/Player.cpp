@@ -10,7 +10,13 @@ Player::Player(Point2f startPos) :
 	m_Direction{ Direction::none },
 	PLAYER_SIZE{ 25 },
 	m_OriginalPosition{ startPos.x },
-	m_TeleportCooldown{}
+	m_TeleportCooldown{},
+	m_StandardSpeed{ 120.f },
+	m_DiagonalSpeed{ 80.f },
+	SPRINT_REGEN{ 0.5 },
+	m_SprintTime{ 10.f },
+	m_IsSprinting{false},
+	m_SprintCoolDown{0.f}
 {
 }
 
@@ -22,6 +28,16 @@ void Player::Update(float elapsedsec, std::vector<std::vector<Point2f>> walls, c
 
 	m_Position.x += m_PlayerSpeed.x * elapsedsec;
 	m_Position.y += m_PlayerSpeed.y * elapsedsec;
+
+	if (m_IsSprinting)
+	{
+		m_SprintTime -= elapsedsec;
+	}
+	else if (m_SprintTime < 10)
+	{
+		m_SprintTime += SPRINT_REGEN * elapsedsec;
+		m_SprintCoolDown -= elapsedsec;
+	}
 
 	DoRaycast(walls);
 }
@@ -67,46 +83,46 @@ void Player::DoMovement(const UINT8* pstates)
 	}
 	else if (pstates[SDL_SCANCODE_LEFT] && pstates[SDL_SCANCODE_UP])
 	{
-		m_PlayerSpeed.x = -85.f;
-		m_PlayerSpeed.y = 85.f;
+		m_PlayerSpeed.x = -m_DiagonalSpeed;
+		m_PlayerSpeed.y = m_DiagonalSpeed;
 	}
 	else if (pstates[SDL_SCANCODE_LEFT] && pstates[SDL_SCANCODE_DOWN])
 	{
-		m_PlayerSpeed.x = -85.f;
-		m_PlayerSpeed.y = -85.f;
+		m_PlayerSpeed.x = -m_DiagonalSpeed;
+		m_PlayerSpeed.y = -m_DiagonalSpeed;
 	}
 	else if (pstates[SDL_SCANCODE_RIGHT] && pstates[SDL_SCANCODE_UP])
 	{
-		m_PlayerSpeed.x = 85.f;
-		m_PlayerSpeed.y = 85.f;
+		m_PlayerSpeed.x = m_DiagonalSpeed;
+		m_PlayerSpeed.y = m_DiagonalSpeed;
 	}
 	else if (pstates[SDL_SCANCODE_RIGHT] && pstates[SDL_SCANCODE_DOWN])
 	{
-		m_PlayerSpeed.x = 85.f;
-		m_PlayerSpeed.y = -85.f;
+		m_PlayerSpeed.x = m_DiagonalSpeed;
+		m_PlayerSpeed.y = -m_DiagonalSpeed;
 	}
 	else if (pstates[SDL_SCANCODE_LEFT])
 	{
-		m_PlayerSpeed.x = -120.f;
+		m_PlayerSpeed.x = -m_StandardSpeed;
 		m_PlayerSpeed.y = 0.f;
 		m_Direction = Direction::left;
 	}
 	else if (pstates[SDL_SCANCODE_RIGHT]) 
 	{
-		m_PlayerSpeed.x = 120.f;
+		m_PlayerSpeed.x = m_StandardSpeed;
 		m_PlayerSpeed.y = 0.f;
 		m_Direction = Direction::right;
 	}
 	else if (pstates[SDL_SCANCODE_UP]) 
 	{
 		m_PlayerSpeed.x = 0.f;
-		m_PlayerSpeed.y = 120.f;
+		m_PlayerSpeed.y = m_StandardSpeed;
 		m_Direction = Direction::up;
 	}
 	else if (pstates[SDL_SCANCODE_DOWN])
 	{
 		 m_PlayerSpeed.x = 0.f;
-		 m_PlayerSpeed.y = -120.f;
+		 m_PlayerSpeed.y = -m_StandardSpeed;
 		 m_Direction = Direction::down;
 	}
 	else
@@ -115,6 +131,37 @@ void Player::DoMovement(const UINT8* pstates)
 		m_PlayerSpeed.y = 0.f;
 		m_Direction = Direction::none;
 	}
+
+	if (pstates[SDL_SCANCODE_LSHIFT] && m_SprintTime >=0 && m_SprintCoolDown <= 0)
+	{
+		m_StandardSpeed = 240.f;
+		m_DiagonalSpeed = 160.f;
+		m_IsSprinting = true;
+	}
+	else
+	{
+		if (m_SprintTime <= 0)
+		{
+			m_SprintCoolDown = 3.f;
+		}
+		m_StandardSpeed = 120.f;
+		m_DiagonalSpeed = 80.f;
+		m_IsSprinting = false;
+	}
+}
+
+void Player::DrawSprintBar() const
+{
+	DrawRect(30.f, 40.f, 150.f, 30.f);
+	if (m_SprintCoolDown > 0)
+	{
+		SetColor(Color4f{ 0.f, 0.f, 0.f, 1.f });
+	}
+	else
+	{
+		SetColor(Color4f{ 1.f, 0.f, 0.f,1.f });
+	}
+	FillRect(30.f, 40.f, 150.f * m_SprintTime / 10, 29.f);
 }
 
 float Player::GetPlayerSize()
@@ -140,8 +187,8 @@ void Player::SetPosition(Point2f newPos)
 
 void Player::ResetPosition()
 {
-	m_Position.x = 15;
-	m_Position.y = 15;
+	m_Position.x = 35;
+	m_Position.y = 35;
 }
 
 void Player::DoRaycast(std::vector<std::vector<Point2f>> walls)

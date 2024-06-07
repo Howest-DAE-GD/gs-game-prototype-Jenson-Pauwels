@@ -10,7 +10,8 @@ Game::Game(const Window& window)
 	m_PlayerPtr{ new Player(Point2f{35, 35})},
 	m_Camera{ new Camera(GetViewPort().width, GetViewPort().height) },
 	parser{},
-	LEVEL_SCALE{ 4.f }
+	LEVEL_SCALE{ 4.f },
+	m_MazeExit(Point2f{1380,700})
 {
 	Initialize();
 }
@@ -44,6 +45,7 @@ void Game::Update( float elapsedSec )
 {
 	const UINT8* pStates = SDL_GetKeyboardState(nullptr);
 	m_PlayerPtr->Update(elapsedSec, m_MazeWalls, pStates);
+	m_MazeExit.Update(m_PlayerPtr->GetPosition());
 	std::cout << m_PlayerPtr->GetPosition().x << " " << m_PlayerPtr->GetPosition().y << "\n";
 
 	if (m_PlayerPtr->GetTeleportCoolDown() <= 0)
@@ -56,6 +58,10 @@ void Game::Update( float elapsedSec )
 			}
 		}
 	}
+	if (m_MazeExit.CheckIfPlayerMustTeleport())
+	{
+		m_PlayerPtr->ResetPosition();
+	}
 }
 
 void Game::Draw( ) const
@@ -64,8 +70,10 @@ void Game::Draw( ) const
 	m_Camera->Move(m_PlayerPtr->GetPosition());
 	DrawMaze();
 	DrawPortals();
+	m_MazeExit.Draw();
 	m_PlayerPtr->Draw();
 	m_Camera->Reset();
+	m_PlayerPtr->DrawSprintBar();
 }
 
 void Game::ProcessKeyDownEvent( const SDL_KeyboardEvent & e )

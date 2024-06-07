@@ -152,6 +152,8 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PortalExit.cpp" />
+    <ClCompile Include="PortalSwitch.cpp" />
     <ClCompile Include="PortalWall.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,8 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClInclude Include="Game.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PortalExit.h" />
+    <ClInclude Include="PortalSwitch.h" />
     <ClInclude Include="PortalWall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

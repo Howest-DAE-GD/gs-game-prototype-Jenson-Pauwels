@@ -5,6 +5,7 @@
 #include <SVGParser.h>
 #include "Camera.h"
 #include "PortalWall.h"
+#include "PortalExit.h"
 class Game : public BaseGame
 {
 public:
@@ -35,6 +36,7 @@ private:
 		PortalWall(Point2f{1,26}, Point2f{226,26}, TeleportDirection::VerticalTeleport),
 		PortalWall(Point2f{1,2974}, Point2f{158,2974}, TeleportDirection::VerticalTeleport)
 	};
+	PortalExit m_MazeExit;
 	SVGParser parser;
 	const float LEVEL_SCALE;
 	// FUNCTIONS
