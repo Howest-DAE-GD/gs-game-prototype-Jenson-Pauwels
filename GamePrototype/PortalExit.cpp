@@ -31,6 +31,37 @@ void PortalExit::Draw() const
 		SetColor(Color4f{ 1.f,0.f,0.f,1.f });
 	}
 
+	if (m_FirstSwitch.GetIsOn())
+	{
+		SetColor(Color4f{ 0.f,1.f,0.f,1.f });
+		FillEllipse(Point2f{ 1330, 900 }, 15,15);
+	}
+	else
+	{
+		SetColor(Color4f{ 1.f,0.f,0.f,1.f });
+		FillEllipse(Point2f{ 1330, 900 }, 15, 15);
+	}
+	if (m_SecondSwitch.GetIsOn())
+	{
+		SetColor(Color4f{ 0.f,1.f,0.f,1.f });
+		FillEllipse(Point2f{ 1370, 900 }, 15, 15);
+	}
+	else
+	{
+		SetColor(Color4f{ 1.f,0.f,0.f,1.f });
+		FillEllipse(Point2f{ 1370, 900 }, 15, 15);
+	}
+	if (m_ThirdSwitch.GetIsOn())
+	{
+		SetColor(Color4f{ 0.f,1.f,0.f,1.f });
+		FillEllipse(Point2f{ 1410, 900 }, 15, 15);
+	}
+	else
+	{
+		SetColor(Color4f{ 1.f,0.f,0.f,1.f });
+		FillEllipse(Point2f{ 1410, 900 }, 15, 15);
+	}
+
 	DrawEllipse(m_Position, 150, 150);
 	m_FirstSwitch.Draw();
 	m_SecondSwitch.Draw();

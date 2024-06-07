@@ -29,7 +29,7 @@ void Player::Update(float elapsedsec, std::vector<std::vector<Point2f>> walls, c
 	m_Position.x += m_PlayerSpeed.x * elapsedsec;
 	m_Position.y += m_PlayerSpeed.y * elapsedsec;
 
-	if (m_IsSprinting)
+	if (m_IsSprinting && (m_PlayerSpeed.x != 0 || m_PlayerSpeed.y != 0))
 	{
 		m_SprintTime -= elapsedsec;
 	}
@@ -77,6 +77,11 @@ void Player::DoMovement(const UINT8* pstates)
 		m_PlayerSpeed.y = 0.f;
 	}
 	else if (pstates[SDL_SCANCODE_RIGHT] && pstates[SDL_SCANCODE_UP] && pstates[SDL_SCANCODE_DOWN])
+	{
+		m_PlayerSpeed.x = 0.f;
+		m_PlayerSpeed.y = 0.f;
+	}
+	else if (pstates[SDL_SCANCODE_UP] && pstates[SDL_SCANCODE_DOWN])
 	{
 		m_PlayerSpeed.x = 0.f;
 		m_PlayerSpeed.y = 0.f;
