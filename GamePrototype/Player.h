@@ -1,6 +1,7 @@
 #pragma once
 #include<utils.h>
 #include<vector>
+#include "StaminaRecharge.h"
 using namespace utils;
 enum class Direction
 {
@@ -30,9 +31,11 @@ private:
 	float m_DiagonalSpeed;
 
 	float m_SprintTime;
-	FLOAT m_SprintCoolDown;
+	float m_SprintCoolDown;
 
 	bool m_IsSprinting;
+
+	StaminaRecharge m_RechargeCollectible1;
 
 	Point2f m_Position;
 	Point2f m_PlayerSpeed;
@@ -49,7 +52,7 @@ private:
 	Point2f m_HorizontalRayCastBottomLeft;
 	Point2f m_HorizontalRayCastBottomRight;
 	HitInfo m_HorizontalHitInfo;
-	const float m_OriginalPosition;
+	const Point2f m_OriginalPosition;
 
 	const float PLAYER_SIZE;
 	const float SPRINT_REGEN;

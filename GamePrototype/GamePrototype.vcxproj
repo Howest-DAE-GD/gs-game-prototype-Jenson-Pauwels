@@ -155,6 +155,8 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClCompile Include="PortalExit.cpp" />
     <ClCompile Include="PortalSwitch.cpp" />
     <ClCompile Include="PortalWall.cpp" />
+    <ClCompile Include="StaminaRecharge.cpp" />
+    <ClCompile Include="TeleporterTrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -164,6 +166,8 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     <ClInclude Include="PortalExit.h" />
     <ClInclude Include="PortalSwitch.h" />
     <ClInclude Include="PortalWall.h" />
+    <ClInclude Include="StaminaRecharge.h" />
+    <ClInclude Include="TeleporterTrap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

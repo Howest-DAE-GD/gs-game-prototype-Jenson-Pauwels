@@ -6,9 +6,9 @@ using namespace utils;
 
 PortalExit::PortalExit(Point2f position) :
 	m_Position{position},
-	m_FirstSwitch{ Point2f{51,2828} },
-	m_SecondSwitch{Point2f{2926,51}},
-	m_ThirdSwitch{Point2f{2864,2854}},
+	m_FirstSwitch{ Point2f{51,2828}, Point2f{353, 2835 }},
+	m_SecondSwitch{Point2f{2926,51}, Point2f{2711, 2366}},
+	m_ThirdSwitch{ Point2f{2864,2854}, Point2f{2841, 1701}},
 	m_PlayerEnteredPortal{false}
 {
 }
@@ -30,6 +30,8 @@ void PortalExit::Draw() const
 	{
 		SetColor(Color4f{ 1.f,0.f,0.f,1.f });
 	}
+
+	DrawEllipse(m_Position, 150, 150);
 
 	if (m_FirstSwitch.GetIsOn())
 	{
@@ -62,7 +64,7 @@ void PortalExit::Draw() const
 		FillEllipse(Point2f{ 1410, 900 }, 15, 15);
 	}
 
-	DrawEllipse(m_Position, 150, 150);
+	
 	m_FirstSwitch.Draw();
 	m_SecondSwitch.Draw();
 	m_ThirdSwitch.Draw();

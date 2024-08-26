@@ -2,7 +2,7 @@
 class PortalSwitch
 {
 public:
-	PortalSwitch(Point2f position);
+	PortalSwitch(Point2f position, Point2f otherPosition);
 	void Draw() const;
 	void Update(Point2f playerPos);
 	bool GetIsOn() const;

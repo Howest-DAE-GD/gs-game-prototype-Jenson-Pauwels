@@ -9,14 +9,15 @@ Player::Player(Point2f startPos) :
 	m_PlayerSpeed{},
 	m_Direction{ Direction::none },
 	PLAYER_SIZE{ 25 },
-	m_OriginalPosition{ startPos.x },
+	m_OriginalPosition{ startPos },
 	m_TeleportCooldown{},
 	m_StandardSpeed{ 120.f },
 	m_DiagonalSpeed{ 80.f },
 	SPRINT_REGEN{ 0.5 },
 	m_SprintTime{ 10.f },
 	m_IsSprinting{false},
-	m_SprintCoolDown{0.f}
+	m_SprintCoolDown{0.f},
+	m_RechargeCollectible1{Point2f{330, 1291}}
 {
 }
 
@@ -28,6 +29,14 @@ void Player::Update(float elapsedsec, std::vector<std::vector<Point2f>> walls, c
 
 	m_Position.x += m_PlayerSpeed.x * elapsedsec;
 	m_Position.y += m_PlayerSpeed.y * elapsedsec;
+
+	m_RechargeCollectible1.Update(elapsedsec);
+
+	if (m_Position.x + PLAYER_SIZE > m_RechargeCollectible1.GetPosition().x && m_Position.y + PLAYER_SIZE > m_RechargeCollectible1.GetPosition().y && m_Position.x < m_RechargeCollectible1.GetPosition().x + m_RechargeCollectible1.GetSize() && m_Position.y < m_RechargeCollectible1.GetPosition().y + m_RechargeCollectible1.GetSize() && m_RechargeCollectible1.GetIsActive())
+	{
+		m_SprintTime = 10;
+		m_RechargeCollectible1.WasUsed();
+	}
 
 	if (m_IsSprinting && (m_PlayerSpeed.x != 0 || m_PlayerSpeed.y != 0))
 	{
@@ -46,6 +55,8 @@ void Player::Draw() const
 {
 	SetColor(Color4f{ 1.f, 1.f, 1.f,1.f });
 	DrawRect(m_Position, PLAYER_SIZE, PLAYER_SIZE);
+
+	m_RechargeCollectible1.Draw();
 
 	SetColor(Color4f{ 1.f, 0.f, 0.f,1.f });
 	/*DrawLine(m_VerticalRayCastTopLeft, m_VerticalRayCastBottomLeft);
@@ -157,6 +168,7 @@ void Player::DoMovement(const UINT8* pstates)
 
 void Player::DrawSprintBar() const
 {
+	SetColor(Color4f{ 1.f,0.f,0.f,1.f });
 	DrawRect(30.f, 40.f, 150.f, 30.f);
 	if (m_SprintCoolDown > 0)
 	{
@@ -166,7 +178,7 @@ void Player::DrawSprintBar() const
 	{
 		SetColor(Color4f{ 1.f, 0.f, 0.f,1.f });
 	}
-	FillRect(30.f, 40.f, 150.f * m_SprintTime / 10, 29.f);
+	FillRect(30.f, 41.f, 150.f * m_SprintTime / 10, 29.f);
 }
 
 float Player::GetPlayerSize()
@@ -192,8 +204,8 @@ void Player::SetPosition(Point2f newPos)
 
 void Player::ResetPosition()
 {
-	m_Position.x = 35;
-	m_Position.y = 35;
+	m_Position.x = m_OriginalPosition.x;
+	m_Position.y = m_OriginalPosition.y;
 }
 
 void Player::DoRaycast(std::vector<std::vector<Point2f>> walls)

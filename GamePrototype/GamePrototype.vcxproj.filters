@@ -39,6 +39,12 @@
     <ClCompile Include="PortalSwitch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TeleporterTrap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaminaRecharge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -60,6 +66,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PortalSwitch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TeleporterTrap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StaminaRecharge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,18 +4,26 @@
 
 using namespace utils;
 
-PortalSwitch::PortalSwitch(Point2f position) :
-	m_Position{ position },
+PortalSwitch::PortalSwitch(Point2f position, Point2f otherPosition) :
+	m_Position{},
 	m_IsOn{ false },
 	m_HasTeleportedPlayer{false}
 {
+	if (rand()%2 == 0)
+	{
+		m_Position = position ;
+	}
+	else
+	{
+		m_Position = otherPosition;
+	}
 }
 
 void PortalSwitch::Draw() const
 {
 	if (!m_IsOn)
 	{
-		SetColor(Color4f{ 1.f, 0.f, 0.f, 1.f });
+		SetColor(Color4f{ 1.f, 0.75f, 0.79f, 1.f });
 	}
 	else
 	{

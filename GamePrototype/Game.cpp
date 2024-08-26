@@ -7,12 +7,18 @@ using namespace utils;
 Game::Game(const Window& window)
 	:BaseGame{ window },
 	m_MazeWalls{},
-	m_PlayerPtr{ new Player(Point2f{35, 35})},
+	m_PlayerPtr{ new Player(Point2f{35, 80}) },
 	m_Camera{ new Camera(GetViewPort().width, GetViewPort().height) },
 	parser{},
 	LEVEL_SCALE{ 4.f },
-	m_MazeExit(Point2f{1380,700})
+	m_MazeExit(Point2f{ 1380,700 })
+	
 {
+	m_Trap[0] = new TeleporterTrap(Point2f{ 814, 53 }, 100, 100);
+	m_Trap[1] = new TeleporterTrap(Point2f{ 97, 1441 }, 150, 100);
+	m_Trap[2] = new TeleporterTrap(Point2f{ 1328, 1744 }, 190, 100);
+	m_Trap[3] = new TeleporterTrap(Point2f{ 905, 561 }, 100, 200);
+	m_Trap[4] = new TeleporterTrap(Point2f{ 2885, 869 }, 125, 125);
 	Initialize();
 }
 
@@ -35,6 +41,17 @@ void Game::Initialize( )
 		}
 	}
 	LinkPortals();
+
+	std::cout << "Welcome to Looooping maze\n";
+	std::cout << "Your goal is to find the portal and it's switches\n";
+	std::cout << "Once all switches are active you can escape through the portal. The number of switches can be seen above the portal\n";
+	std::cout << "The portal will turn blue when you escaped\n";
+	std::cout << "Use arrow keys to move and shift to sprint\n";
+	std::cout << "The red bar (which you are current undr) is your sprint bar\n";
+	std::cout << "The green lines you might find in the maze are portals that you can go through\n";
+	std::cout << "Those portals have a 3 second cooldown\n";
+	std::cout << "Be careful for teleporter traps, red means on, blue means off, orange means about to turn on\n";
+	std::cout << "The small green squares recharge your stamina\n";
 }
 
 void Game::Cleanup( )
@@ -46,7 +63,13 @@ void Game::Update( float elapsedSec )
 	const UINT8* pStates = SDL_GetKeyboardState(nullptr);
 	m_PlayerPtr->Update(elapsedSec, m_MazeWalls, pStates);
 	m_MazeExit.Update(m_PlayerPtr->GetPosition());
-	std::cout << m_PlayerPtr->GetPosition().x << " " << m_PlayerPtr->GetPosition().y << "\n";
+	
+	for (size_t index = 0; index < 5; index++)
+	{
+		m_Trap[index]->Update(elapsedSec, m_PlayerPtr->GetPosition(), m_PlayerPtr->GetPlayerSize());
+	}
+
+	//std::cout << m_PlayerPtr->GetPosition().x << " " << m_PlayerPtr->GetPosition().y << "\n";
 
 	if (m_PlayerPtr->GetTeleportCoolDown() <= 0)
 	{
@@ -62,12 +85,25 @@ void Game::Update( float elapsedSec )
 	{
 		m_PlayerPtr->ResetPosition();
 	}
+
+	for (size_t index = 0; index < 5; index++)
+	{
+		if (m_Trap[index]->GetPlayerNeedsToTeleport())
+		{
+			m_PlayerPtr->ResetPosition();
+			m_Trap[index]->PlayerHasTeleported();
+		}
+	}
 }
 
 void Game::Draw( ) const
 {
 	ClearBackground( );
 	m_Camera->Move(m_PlayerPtr->GetPosition());
+	for (size_t index = 0; index < 5; index++)
+	{
+		m_Trap[index]->Draw();
+	}
 	DrawMaze();
 	DrawPortals();
 	m_MazeExit.Draw();

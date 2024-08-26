@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "PortalWall.h"
 #include "PortalExit.h"
+#include "TeleporterTrap.h"
 class Game : public BaseGame
 {
 public:
@@ -37,6 +38,7 @@ private:
 		PortalWall(Point2f{1,2974}, Point2f{158,2974}, TeleportDirection::VerticalTeleport)
 	};
 	PortalExit m_MazeExit;
+	TeleporterTrap* m_Trap[5];
 	SVGParser parser;
 	const float LEVEL_SCALE;
 	// FUNCTIONS
