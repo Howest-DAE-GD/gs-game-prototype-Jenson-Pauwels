@@ -17,7 +17,8 @@ Player::Player(Point2f startPos) :
 	m_SprintTime{ 10.f },
 	m_IsSprinting{false},
 	m_SprintCoolDown{0.f},
-	m_RechargeCollectible1{Point2f{330, 1291}}
+	m_RechargeCollectible1{Point2f{330, 1291}},
+	m_RechargeCollectible2{Point2f{2459, 126}}
 {
 }
 
@@ -31,11 +32,20 @@ void Player::Update(float elapsedsec, std::vector<std::vector<Point2f>> walls, c
 	m_Position.y += m_PlayerSpeed.y * elapsedsec;
 
 	m_RechargeCollectible1.Update(elapsedsec);
+	m_RechargeCollectible2.Update(elapsedsec);
 
 	if (m_Position.x + PLAYER_SIZE > m_RechargeCollectible1.GetPosition().x && m_Position.y + PLAYER_SIZE > m_RechargeCollectible1.GetPosition().y && m_Position.x < m_RechargeCollectible1.GetPosition().x + m_RechargeCollectible1.GetSize() && m_Position.y < m_RechargeCollectible1.GetPosition().y + m_RechargeCollectible1.GetSize() && m_RechargeCollectible1.GetIsActive())
 	{
 		m_SprintTime = 10;
+		m_SprintCoolDown = 0;
 		m_RechargeCollectible1.WasUsed();
+	}
+
+	if (m_Position.x + PLAYER_SIZE > m_RechargeCollectible2.GetPosition().x && m_Position.y + PLAYER_SIZE > m_RechargeCollectible2.GetPosition().y && m_Position.x < m_RechargeCollectible2.GetPosition().x + m_RechargeCollectible2.GetSize() && m_Position.y < m_RechargeCollectible2.GetPosition().y + m_RechargeCollectible2.GetSize() && m_RechargeCollectible2.GetIsActive())
+	{
+		m_SprintTime = 10;
+		m_SprintCoolDown = 0;
+		m_RechargeCollectible2.WasUsed();
 	}
 
 	if (m_IsSprinting && (m_PlayerSpeed.x != 0 || m_PlayerSpeed.y != 0))
@@ -57,6 +67,7 @@ void Player::Draw() const
 	DrawRect(m_Position, PLAYER_SIZE, PLAYER_SIZE);
 
 	m_RechargeCollectible1.Draw();
+	m_RechargeCollectible2.Draw();
 
 	SetColor(Color4f{ 1.f, 0.f, 0.f,1.f });
 	/*DrawLine(m_VerticalRayCastTopLeft, m_VerticalRayCastBottomLeft);
@@ -202,10 +213,14 @@ void Player::SetPosition(Point2f newPos)
 	m_TeleportCooldown = 3.f;
 }
 
-void Player::ResetPosition()
+void Player::ResetPosition(bool fullReset)
 {
 	m_Position.x = m_OriginalPosition.x;
 	m_Position.y = m_OriginalPosition.y;
+	if (fullReset)
+	{
+		m_SprintTime = 10.f;
+	}
 }
 
 void Player::DoRaycast(std::vector<std::vector<Point2f>> walls)

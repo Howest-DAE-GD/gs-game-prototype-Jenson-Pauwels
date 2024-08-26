@@ -22,7 +22,7 @@ public:
 	float GetTeleportCoolDown();
 	Point2f GetPosition() const;
 	void SetPosition(Point2f newPos);
-	void ResetPosition();
+	void ResetPosition(bool FullReset);
 	void DrawSprintBar() const;
 private:
 	float m_TeleportCooldown;
@@ -36,6 +36,7 @@ private:
 	bool m_IsSprinting;
 
 	StaminaRecharge m_RechargeCollectible1;
+	StaminaRecharge m_RechargeCollectible2;
 
 	Point2f m_Position;
 	Point2f m_PlayerSpeed;

@@ -43,7 +43,7 @@ void Game::Initialize( )
 	LinkPortals();
 
 	std::cout << "Welcome to Looooping maze\n";
-	std::cout << "Your goal is to find the portal and it's switches\n";
+	std::cout << "Your goal is to find the portal and it's switches, switches are white/pinkish\n";
 	std::cout << "Once all switches are active you can escape through the portal. The number of switches can be seen above the portal\n";
 	std::cout << "The portal will turn blue when you escaped\n";
 	std::cout << "Use arrow keys to move and shift to sprint\n";
@@ -52,6 +52,7 @@ void Game::Initialize( )
 	std::cout << "Those portals have a 3 second cooldown\n";
 	std::cout << "Be careful for teleporter traps, red means on, blue means off, orange means about to turn on\n";
 	std::cout << "The small green squares recharge your stamina\n";
+	std::cout << "Be careful, once a switch is active you have 60 seconds to go to another one (time may update weirdly)\n";
 }
 
 void Game::Cleanup( )
@@ -62,14 +63,14 @@ void Game::Update( float elapsedSec )
 {
 	const UINT8* pStates = SDL_GetKeyboardState(nullptr);
 	m_PlayerPtr->Update(elapsedSec, m_MazeWalls, pStates);
-	m_MazeExit.Update(m_PlayerPtr->GetPosition());
+	m_MazeExit.Update(m_PlayerPtr->GetPosition(), elapsedSec);
 	
 	for (size_t index = 0; index < 5; index++)
 	{
 		m_Trap[index]->Update(elapsedSec, m_PlayerPtr->GetPosition(), m_PlayerPtr->GetPlayerSize());
 	}
 
-	//std::cout << m_PlayerPtr->GetPosition().x << " " << m_PlayerPtr->GetPosition().y << "\n";
+	std::cout << m_PlayerPtr->GetPosition().x << " " << m_PlayerPtr->GetPosition().y << "\n";
 
 	if (m_PlayerPtr->GetTeleportCoolDown() <= 0)
 	{
@@ -83,14 +84,19 @@ void Game::Update( float elapsedSec )
 	}
 	if (m_MazeExit.CheckIfPlayerMustTeleport())
 	{
-		m_PlayerPtr->ResetPosition();
+		m_PlayerPtr->ResetPosition(false);
+	}
+	if (m_MazeExit.GetGameMustReset())
+	{
+		m_PlayerPtr->ResetPosition(true);
+		m_MazeExit.GameReset();
 	}
 
 	for (size_t index = 0; index < 5; index++)
 	{
 		if (m_Trap[index]->GetPlayerNeedsToTeleport())
 		{
-			m_PlayerPtr->ResetPosition();
+			m_PlayerPtr->ResetPosition(false);
 			m_Trap[index]->PlayerHasTeleported();
 		}
 	}

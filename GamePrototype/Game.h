@@ -34,8 +34,8 @@ private:
 	std::vector<std::vector<Point2f>> m_MazeWalls;
 	std::vector<PortalWall> m_PortalWalls
 	{
-		PortalWall(Point2f{1,26}, Point2f{226,26}, TeleportDirection::VerticalTeleport),
-		PortalWall(Point2f{1,2974}, Point2f{158,2974}, TeleportDirection::VerticalTeleport)
+		PortalWall(Point2f{1028,163}, Point2f{1163,163}, TeleportDirection::VerticalTeleport),
+		PortalWall(Point2f{885,1390}, Point2f{1110,1390}, TeleportDirection::VerticalTeleport)
 	};
 	PortalExit m_MazeExit;
 	TeleporterTrap* m_Trap[5];

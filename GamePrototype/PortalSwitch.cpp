@@ -34,7 +34,7 @@ void PortalSwitch::Draw() const
 
 void PortalSwitch::Update(Point2f playerPos)
 {
-	if(playerPos.x > m_Position.x && playerPos.y > m_Position.y && playerPos.x < m_Position.x +50 && playerPos.y < m_Position.y + 50 )
+	if(playerPos.x > m_Position.x && playerPos.y > m_Position.y && playerPos.x < m_Position.x +50 && playerPos.y < m_Position.y + 50 && !m_IsOn )
 	{
 		m_IsOn = true;
 	}
@@ -53,4 +53,12 @@ bool PortalSwitch::ShouldPlayerTeleport()
 		return true;
 	}
 	return false;
+}
+
+
+
+void PortalSwitch::Reset()
+{
+	m_IsOn = false;
+	m_HasTeleportedPlayer = false;
 }

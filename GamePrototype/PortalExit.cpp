@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PortalExit.h"
 #include <utils.h>
+#include <iostream>
 
 using namespace utils;
 
@@ -9,7 +10,10 @@ PortalExit::PortalExit(Point2f position) :
 	m_FirstSwitch{ Point2f{51,2828}, Point2f{353, 2835 }},
 	m_SecondSwitch{Point2f{2926,51}, Point2f{2711, 2366}},
 	m_ThirdSwitch{ Point2f{2864,2854}, Point2f{2841, 1701}},
-	m_PlayerEnteredPortal{false}
+	m_PlayerEnteredPortal{false},
+	m_ResetTimer{180},
+	m_PrinterTimer{1},
+	m_GameMustReset{false}
 {
 }
 
@@ -70,7 +74,7 @@ void PortalExit::Draw() const
 	m_ThirdSwitch.Draw();
 }
 
-void PortalExit::Update(Point2f PlayerPos)
+void PortalExit::Update(Point2f PlayerPos, float elapsedSec)
 {
 	m_FirstSwitch.Update(PlayerPos);
 	m_SecondSwitch.Update(PlayerPos);
@@ -79,6 +83,27 @@ void PortalExit::Update(Point2f PlayerPos)
 	if (PlayerPos.x > m_Position.x - 150 && PlayerPos.y > m_Position.y - 150 && PlayerPos.x < m_Position.x + 150 && PlayerPos.y < m_Position.y + 150 && m_FirstSwitch.GetIsOn() && m_SecondSwitch.GetIsOn() && m_ThirdSwitch.GetIsOn())
 	{
 		m_PlayerEnteredPortal = true;
+		std::cout << "You escaped the looooping maze\n";
+	}
+
+	if ((m_FirstSwitch.GetIsOn() || m_SecondSwitch.GetIsOn() || m_ThirdSwitch.GetIsOn()) && !m_PlayerEnteredPortal)
+	{
+		m_ResetTimer -= elapsedSec;
+		m_PrinterTimer -= elapsedSec;
+		if (m_PrinterTimer <= 0)
+		{
+			m_PrinterTimer = 1;
+			std::cout << (int)m_ResetTimer << "\n";
+		}
+		if (m_ResetTimer <= 0)
+		{
+			m_GameMustReset = true;
+			m_FirstSwitch.Reset();
+			m_SecondSwitch.Reset();
+			m_ThirdSwitch.Reset();
+			m_ResetTimer = 60.f;
+			m_PrinterTimer = 1.f;
+		}
 	}
 }
 
@@ -89,4 +114,14 @@ bool PortalExit::CheckIfPlayerMustTeleport()
 		return true;
 	}
 	return false;
+}
+
+bool PortalExit::GetGameMustReset()
+{
+	return m_GameMustReset;
+}
+
+void PortalExit::GameReset()
+{
+	m_GameMustReset = false;
 }

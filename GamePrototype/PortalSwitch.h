@@ -7,6 +7,7 @@ public:
 	void Update(Point2f playerPos);
 	bool GetIsOn() const;
 	bool ShouldPlayerTeleport();
+	void Reset();
 private:
 	Point2f m_Position;
 	bool m_IsOn;
